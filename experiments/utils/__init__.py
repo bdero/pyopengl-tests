@@ -1,4 +1,5 @@
 import sys
+from time import time
 
 from contextlib import contextmanager
 from vispy.gloo.context import FakeCanvas
@@ -6,7 +7,12 @@ import OpenGL.GL as gl
 import OpenGL.GLUT as glut
 
 
+clock = 0.0
+initial_time = None
+previous_time = None
+
 display_callbacks = []
+update_callbacks = []
 
 
 def _display():
@@ -37,6 +43,20 @@ def _mouse(button, state, x, y):
             print('Mouse released')
 
 
+def timer(fps):
+    # Update the clock
+    global previous_time, clock
+    dt = time() - previous_time
+    clock += dt
+    previous_time = initial_time + clock
+
+    for callback in update_callbacks:
+        callback(dt)
+
+    glut.glutTimerFunc(int(1000/fps), timer, fps)
+    glut.glutPostRedisplay()
+
+
 @contextmanager
 def init_window(width=1600, height=900, title='OpenGL'):
     glut.glutInit(sys.argv)
@@ -50,6 +70,11 @@ def init_window(width=1600, height=900, title='OpenGL'):
 
     glut.glutKeyboardFunc(_keyboard)
     glut.glutMouseFunc(_mouse)
+
+    global initial_time, previous_time
+    initial_time = previous_time = time()
+
+    glut.glutTimerFunc(int(1000/60), timer, 60)
 
     yield
 
