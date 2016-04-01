@@ -24,7 +24,7 @@ if __name__ == '__main__':
     glut.glutInit()
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGBA)
     glut.glutCreateWindow("Hello world")
-    glut.glutReshapeWindow(512, 512)
+    glut.glutReshapeWindow(1600, 900)
 
     glut.glutReshapeFunc(reshape)
     glut.glutDisplayFunc(display)
