@@ -33,7 +33,7 @@ def _mouse(button, state, x, y):
 
 
 @contextmanager
-def initWindow(width=1600, height=900, title='OpenGL'):
+def init_window(width=1600, height=900, title='OpenGL'):
     glut.glutInit()
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGBA)
 
@@ -69,7 +69,5 @@ def build_program(vertex_string, fragment_string):
 
     gl.glDetachShader(program, vertex)
     gl.glDetachShader(program, fragment)
-
-    gl.glUseProgram(program)
 
     return program
