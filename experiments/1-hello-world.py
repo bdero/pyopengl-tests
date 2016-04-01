@@ -4,4 +4,5 @@ import utils
 
 
 if __name__ == '__main__':
-    utils.initWindow()
+    with utils.initWindow():
+        pass

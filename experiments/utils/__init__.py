@@ -1,5 +1,6 @@
 import sys
 
+from contextlib import contextmanager
 import OpenGL.GL as gl
 import OpenGL.GLUT as glut
 
@@ -31,6 +32,7 @@ def _mouse(button, state, x, y):
             print('Mouse released')
 
 
+@contextmanager
 def initWindow(width=1600, height=900, title='OpenGL'):
     glut.glutInit()
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGBA)
@@ -43,6 +45,8 @@ def initWindow(width=1600, height=900, title='OpenGL'):
 
     glut.glutKeyboardFunc(_keyboard)
     glut.glutMouseFunc(_mouse)
+
+    yield
 
     glut.glutMainLoop()
 
