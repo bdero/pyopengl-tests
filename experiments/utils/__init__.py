@@ -1,6 +1,7 @@
 import sys
 
 from contextlib import contextmanager
+from vispy.gloo.context import FakeCanvas
 import OpenGL.GL as gl
 import OpenGL.GLUT as glut
 
@@ -9,8 +10,12 @@ display_callbacks = []
 
 
 def _display():
+    gl.glClearColor(1, 1, 1, 1)
+    gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
     for callback in display_callbacks:
         callback()
+
     glut.glutSwapBuffers()
 
 
@@ -34,7 +39,7 @@ def _mouse(button, state, x, y):
 
 @contextmanager
 def init_window(width=1600, height=900, title='OpenGL'):
-    glut.glutInit()
+    glut.glutInit(sys.argv)
     glut.glutInitDisplayMode(glut.GLUT_DOUBLE | glut.GLUT_RGBA)
 
     glut.glutCreateWindow(title)
@@ -48,26 +53,6 @@ def init_window(width=1600, height=900, title='OpenGL'):
 
     yield
 
+    canvas = FakeCanvas()
+
     glut.glutMainLoop()
-
-
-def build_program(vertex_string, fragment_string):
-    program = gl.glCreateProgram()
-
-    vertex = gl.glCreateShader(gl.GL_VERTEX_SHADER)
-    fragment = gl.glCreateShader(gl.GL_FRAGMENT_SHADER)
-
-    gl.glShaderSource(vertex, vertex_string)
-    gl.glShaderSource(fragment, fragment_string)
-
-    gl.glCompileShader(vertex)
-    gl.glCompileShader(fragment)
-
-    gl.glAttachShader(program, vertex)
-    gl.glAttachShader(program, fragment)
-    gl.glLinkProgram(program)
-
-    gl.glDetachShader(program, vertex)
-    gl.glDetachShader(program, fragment)
-
-    return program
