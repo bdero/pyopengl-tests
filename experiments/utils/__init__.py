@@ -4,21 +4,26 @@ import OpenGL.GL as gl
 import OpenGL.GLUT as glut
 
 
-def display_callback():
+display_callbacks = []
+
+
+def _display():
+    for callback in display_callbacks:
+        callback()
     glut.glutSwapBuffers()
 
 
-def reshape_callback(width, height):
+def _reshape(width, height):
     gl.glViewport(0, 0, width, height)
 
 
-def keyboard_callback(key, x, y):
+def _keyboard(key, x, y):
     # CTRL+C or ESCAPE
     if key in [b'\x03', b'\x1b']:
         sys.exit()
 
 
-def mouse_callback(button, state, x, y):
+def _mouse(button, state, x, y):
     if button == glut.GLUT_LEFT_BUTTON:
         if not state:
             print('Mouse clicked')
@@ -33,10 +38,34 @@ def initWindow(width=1600, height=900, title='OpenGL'):
     glut.glutCreateWindow(title)
     glut.glutReshapeWindow(width, height)
 
-    glut.glutReshapeFunc(reshape_callback)
-    glut.glutDisplayFunc(display_callback)
+    glut.glutReshapeFunc(_reshape)
+    glut.glutDisplayFunc(_display)
 
-    glut.glutKeyboardFunc(keyboard_callback)
-    glut.glutMouseFunc(mouse_callback)
+    glut.glutKeyboardFunc(_keyboard)
+    glut.glutMouseFunc(_mouse)
 
     glut.glutMainLoop()
+
+
+def build_program(vertex_string, fragment_string):
+    program = gl.glCreateProgram()
+
+    vertex = gl.glCreateShader(gl.GL_VERTEX_SHADER)
+    fragment = gl.glCreateShader(gl.GL_FRAGMENT_SHADER)
+
+    gl.glShaderSource(vertex, vertex_string)
+    gl.glShaderSource(fragment, fragment_string)
+
+    gl.glCompileShader(vertex)
+    gl.glCompileShader(fragment)
+
+    gl.glAttachShader(program, vertex)
+    gl.glAttachShader(program, fragment)
+    gl.glLinkProgram(program)
+
+    gl.glDetachShader(program, vertex)
+    gl.glDetachShader(program, fragment)
+
+    gl.glUseProgram(program)
+
+    return program
